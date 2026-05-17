@@ -55,6 +55,38 @@ input {
 .hero-card {
   border-radius: 30px;
   padding: 24px;
+  position: relative;
+}
+
+.treasurer-fab {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(23, 48, 43, 0.14);
+}
+
+.treasurer-fab__icon {
+  font-size: 1.25rem;
+}
+
+.treasurer-fab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 46px rgba(23, 48, 43, 0.18);
+}
+
+.hero-controls {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
 }
 
 .top-row {
@@ -206,9 +238,7 @@ h1 {
   min-height: 210px;
   overflow: hidden;
   border-radius: 24px;
-  background:
-    linear-gradient(135deg, rgba(19, 78, 74, 0.88), rgba(214, 168, 79, 0.7)),
-    #d9d2c3;
+  background: transparent;
 }
 
 .image-frame:first-child {
@@ -216,7 +246,7 @@ h1 {
 }
 
 .mosque-image {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .panel {
@@ -615,8 +645,8 @@ tbody tr:last-child td {
   margin-top: 18px;
   border: 1px solid var(--line);
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 18px;
 }
 
 .hero-progress__top {
@@ -833,11 +863,11 @@ tbody tr:last-child td {
     width: 100%;
   }
 
-  /* Images: more natural carousel with peek */
+  /* Images: natural scroll with peek */
   .image-strip--scroll {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: max-content;
+    grid-auto-columns: minmax(78%, 92%);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
@@ -847,12 +877,18 @@ tbody tr:last-child td {
 
   .image-strip--scroll .image-frame {
     scroll-snap-align: start;
-    width: min(92vw, 420px);
+    width: auto;
     aspect-ratio: 16 / 10;
-    min-height: unset;
   }
 
-  .mosque-image {
-    object-fit: contain;
+  .hero-title {
+    text-align: center;
+    padding-right: 48px; /* space for treasurer icon */
+    padding-left: 48px;
+  }
+
+  /* Hide desktop summary grid on mobile (use summary-stack instead) */
+  .summary-grid {
+    display: none;
   }
 }

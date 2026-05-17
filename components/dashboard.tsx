@@ -129,6 +129,11 @@ const mosqueImages = [
   "/images/mosque/mosque-hero-1.jpeg",
   "/images/mosque/mosque-hero-2.jpeg",
   "/images/mosque/mosque-hero-3.jpeg",
+  "/images/mosque/mosque-hero-4.jpeg",
+  "/images/mosque/mosque-hero-5.jpeg",
+  "/images/mosque/mosque-hero-6.jpeg",
+  "/images/mosque/mosque-hero-7.jpeg",
+  "/images/mosque/mosque-hero-8.jpg",
 ];
 
 function formatCurrency(value: number) {
@@ -173,18 +178,26 @@ export default function Dashboard({
   return (
     <main className={`dashboard-shell ${language === "ur" ? "rtl" : ""}`}>
       <header className="hero-card">
-        <div className="top-row top-row--hero">
-          <div className="hero-left">
-            <Link className="donor-link" href="/treasurer/login">
-              {t.treasurer}
-            </Link>
-          </div>
+        <Link className="treasurer-fab" href="/treasurer/login" aria-label={t.treasurer}>
+          <span className="treasurer-fab__icon" aria-hidden="true">
+            👤
+          </span>
+        </Link>
 
+        <div className="top-row top-row--hero">
           <div className="hero-center">
             <h1 className="hero-title">{t.mosqueName}</h1>
           </div>
 
-          <div className="hero-right">
+          <div className="hero-right hero-controls">
+            <button
+              type="button"
+              className="donor-link"
+              onClick={() => setDonorOpen(true)}
+            >
+              {t.donorList}
+            </button>
+
             <label className="language-picker">
               <span>{t.language}</span>
               <select
@@ -196,24 +209,20 @@ export default function Dashboard({
                 <option value="ur">اردو</option>
               </select>
             </label>
-            <button
-              type="button"
-              className="donor-link"
-              onClick={() => setDonorOpen(true)}
-            >
-              {t.donorList}
-            </button>
           </div>
         </div>
 
-        <section className="image-strip image-strip--scroll" aria-label="Mosque gallery">
+        <section
+          className="image-strip image-strip--scroll"
+          aria-label="Mosque gallery"
+        >
           {mosqueImages.map((src, index) => (
             <div className="image-frame" key={src}>
               <Image
                 src={src}
                 alt={`${t.mosqueName} ${index + 1}`}
                 fill
-                sizes="(max-width: 900px) 86vw, 33vw"
+                sizes="(max-width: 900px) 92vw, 33vw"
                 className="mosque-image"
                 priority={index === 0}
               />
@@ -222,8 +231,8 @@ export default function Dashboard({
         </section>
 
         <DonationProgressHero
+          title="Donation Progress Bar"
           progress={donationProgress}
-          label={t.currentProgress}
           mosqueName={t.mosqueName}
         />
       </header>
@@ -250,39 +259,38 @@ export default function Dashboard({
               {t.donations}
             </button>
           </div>
-
-          {activeTab === "transactions" && (
-            <label className="month-picker">
-              <span>{t.month}</span>
-              <select
-                value={selectedMonthKey}
-                onChange={(event) => router.push(`/?month=${event.target.value}`)}
-              >
-                {monthOptions.map((option) => {
-                  const date = parseMonthKey(option);
-                  const label = date ? monthLabel(date) : option;
-                  return (
-                    <option value={option} key={option}>
-                      {label}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-          )}
         </div>
 
         {activeTab === "transactions" ? (
           <>
-            <div className="section-heading section-heading--table">
-              <h2>{selectedMonth ? monthLabel(selectedMonth) : selectedMonthKey}</h2>
+            <div className="month-header">
+              <label className="month-picker month-picker--center">
+                <span className="sr-only">{t.month}</span>
+                <select
+                  value={selectedMonthKey}
+                  onChange={(event) => router.push(`/?month=${event.target.value}`)}
+                >
+                  {monthOptions.map((option) => {
+                    const date = parseMonthKey(option);
+                    const label = date ? monthLabel(date) : option;
+                    return (
+                      <option value={option} key={option}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </label>
+
+              <h2 className="month-title">
+                {selectedMonth ? monthLabel(selectedMonth) : selectedMonthKey}
+              </h2>
             </div>
 
             <div className="table-shell transactions-table" aria-label={t.transactions}>
               <table>
                 <thead>
                   <tr>
-                    <th>{t.date}</th>
                     <th>{t.donor}</th>
                     <th>{t.amount}</th>
                     <th>{t.type}</th>
@@ -292,14 +300,13 @@ export default function Dashboard({
                 <tbody>
                   {transactions.length === 0 ? (
                     <tr>
-                      <td className="empty-state" colSpan={5}>
+                      <td className="empty-state" colSpan={4}>
                         {t.noTransactions}
                       </td>
                     </tr>
                   ) : (
                     transactions.map((transaction) => (
                       <tr key={transaction.id}>
-                        <td>{formatDate(transaction.Timestamp)}</td>
                         <td>{transaction.Name ?? "—"}</td>
                         <td>{formatCurrency(transaction.Amount)}</td>
                         <td>
@@ -342,36 +349,36 @@ export default function Dashboard({
               )}
             </div>
 
-            <div className="summary-grid">
-              <article>
+            <div className="summary-stack">
+              <article className="summary-card">
                 <span>{t.totalCredit}</span>
                 <strong>{formatCurrency(summary.totalCredit)}</strong>
               </article>
-              <article>
+              <article className="summary-card">
                 <span>{t.totalDebit}</span>
                 <strong>{formatCurrency(summary.totalDebit)}</strong>
               </article>
-              <article>
-                <span>{t.remaining}</span>
-                <strong>{formatCurrency(summary.remaining)}</strong>
-              </article>
-              <article className="closing-card">
+              <article className="summary-card closing-card">
                 <span>{t.closingBalance}</span>
                 <strong>{formatCurrency(summary.closingBalance)}</strong>
               </article>
             </div>
           </>
         ) : (
-          <DonationPanel
-            title={t.donationHeading}
-            body={t.donationBody}
-            progressLabel={t.currentProgress}
-            amountLabel={t.amountToDonate}
-            payLabel={t.payNow}
-            missingUpiLabel={t.missingUpi}
-            progress={donationProgress}
-            upiId={upiId}
-          />
+          <div className="donation-tab">
+            <h2>{t.donationHeading}</h2>
+            <p>{t.donationBody}</p>
+
+            <DonationPanel
+              title={t.donationHeading}
+              body={t.donationBody}
+              amountLabel={t.amountToDonate}
+              payLabel={t.payNow}
+              missingUpiLabel={t.missingUpi}
+              progress={donationProgress}
+              upiId={upiId}
+            />
+          </div>
         )}
       </section>
     </main>
@@ -379,12 +386,12 @@ export default function Dashboard({
 }
 
 function DonationProgressHero({
+  title,
   progress,
-  label,
   mosqueName,
 }: {
+  title: string;
   progress: { current: number; target: number };
-  label: string;
   mosqueName: string;
 }) {
   const percent =
@@ -395,22 +402,34 @@ function DonationProgressHero({
   const [animated, setAnimated] = useState(0);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => setAnimated(percent), 80);
+    // moderate animation speed
+    const timeout = window.setTimeout(() => setAnimated(percent), 180);
     return () => window.clearTimeout(timeout);
   }, [percent]);
 
   const achieved = percent >= 100 && progress.target > 0;
 
+  // Red -> Yellow -> Green
+  const barGradient =
+    percent >= 80
+      ? "linear-gradient(90deg, #22c55e, #16a34a)"
+      : percent >= 40
+        ? "linear-gradient(90deg, #f97316, #facc15)"
+        : "linear-gradient(90deg, #ef4444, #f97316)";
+
   return (
     <section className={`hero-progress ${achieved ? "achieved" : ""}`}>
       <div className="hero-progress__top">
-        <strong>{label}</strong>
+        <strong>{title}</strong>
         <span>
           {formatCurrency(progress.current)} / {formatCurrency(progress.target)}
         </span>
       </div>
-      <div className="progress-track" aria-label={label}>
-        <div className="progress-fill" style={{ width: `${animated}%` }} />
+      <div className="progress-track" aria-label={title}>
+        <div
+          className="progress-fill"
+          style={{ width: `${animated}%`, background: barGradient }}
+        />
       </div>
       {achieved && (
         <p className="hero-progress__note">Goal achieved for {mosqueName}.</p>
@@ -493,7 +512,6 @@ function DonorModal({ onClose }: { onClose: () => void }) {
 function DonationPanel({
   title,
   body,
-  progressLabel,
   amountLabel,
   payLabel,
   missingUpiLabel,
@@ -502,7 +520,6 @@ function DonationPanel({
 }: {
   title: string;
   body: string;
-  progressLabel: string;
   amountLabel: string;
   payLabel: string;
   missingUpiLabel: string;
@@ -527,16 +544,6 @@ function DonationPanel({
       <div>
         <h2>{title}</h2>
         <p>{body}</p>
-
-        <div className="donation-progress">
-          <span>{progressLabel}</span>
-          <div className="progress-track" aria-label={progressLabel}>
-            <div className="progress-fill" style={{ width: `${percent}%` }} />
-          </div>
-          <strong>
-            {formatCurrency(progress.current)} / {formatCurrency(progress.target)}
-          </strong>
-        </div>
       </div>
 
       <div className="donation-action-card">
