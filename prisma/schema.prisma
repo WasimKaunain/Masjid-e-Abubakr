@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum TransactionType {
+  Credit
+  Debit
+}
+
+model transactions {
+  id          Int              @id @default(autoincrement())
+  Name        String?          @db.VarChar(50)
+  Amount      Decimal?         @db.Decimal(10, 2)
+  Type        TransactionType?
+  Description String?
+  Timestamp   DateTime?        @default(now())
+
+  @@index([Timestamp])
+  @@index([Type])
+}
+
+model donor_list {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(25)
+  amount      Decimal   @db.Decimal(10, 2)
+  paid_or_not Boolean   @default(false)
+  phone       String?   @unique @db.VarChar(10)
+}
+
+model monthly_report {
+  month_name             String    @id @db.VarChar(20)
+  total_credit           Decimal   @db.Decimal(10, 2)
+  total_debit            Decimal?  @db.Decimal(10, 2)
+  remaining_amount       Decimal   @db.Decimal(10, 2)
+  previous_amount        Decimal?  @db.Decimal(10, 2)
+  total_remaining_amount Decimal?  @db.Decimal(10, 2)
+  due_count              Decimal?  @db.Decimal(10, 2)
+}
