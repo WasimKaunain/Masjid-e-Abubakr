@@ -455,27 +455,28 @@ export default function Dashboard({
           </>
         ) : (
           <div className="donation-tab">
-            <h2>{t.donationHeading}</h2>
-            <p>{t.donationBody}</p>
+            <header className="donation-tab__header">
+              <h2>{t.donationHeading}</h2>
+              <p>{t.donationBody}</p>
+            </header>
 
-            <DonationPanel
-              title={t.donationHeading}
-              body={t.donationBody}
-              amountLabel={t.amountToDonate}
-              payLabel={t.payNow}
-              missingUpiLabel={t.missingUpi}
-              progress={donationProgress}
-              upiId={upiId}
-            />
+            <div className="donation-tab__content">
+              <DonationPanel
+                title={t.donationHeading}
+                body={t.donationBody}
+                amountLabel={t.amountToDonate}
+                payLabel={t.payNow}
+                missingUpiLabel={t.missingUpi}
+                progress={donationProgress}
+                upiId={upiId}
+              />
+            </div>
           </div>
         )}
       </section>
 
       <footer className="site-footer" aria-label="Footer">
         <div className="site-footer__inner">
-          <p>
-            Developed by <strong>Wasim Konain</strong>.
-          </p>
           <p>
             © 2026 <strong>Masjid-e-Abubakr</strong>. All rights reserved. Made with
             {" "}

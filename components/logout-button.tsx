@@ -12,7 +12,7 @@ export default function LogoutButton() {
   }
 
   return (
-    <button className="soft-button" onClick={logout}>
+    <button className="pill-button pill-button--danger" onClick={logout}>
       Logout
     </button>
   );
