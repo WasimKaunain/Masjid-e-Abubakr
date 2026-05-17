@@ -178,42 +178,58 @@ export default function Dashboard({
   return (
     <main className={`dashboard-shell ${language === "ur" ? "rtl" : ""}`}>
       <header className="hero-card hero-banner">
-        <Link
-          className="treasurer-fab"
-          href="/treasurer/login"
-          aria-label={t.treasurer}
-          title={t.treasurer}
-        >
-          <span className="treasurer-fab__icon" aria-hidden="true">
-            👤
-          </span>
-        </Link>
+        <div className="hero-header">
+          <div className="hero-header__left">
+            <div className="hero-logo hero-logo--desktop">
+              <Image
+                src="/images/mosque/mosque_logo.png"
+                alt="Mosque logo"
+                width={120}
+                height={120}
+                priority
+              />
+            </div>
 
-        <div className="hero-stack">
-          <div className="hero-title-row">
-            <h1 className="hero-title">{t.mosqueName}</h1>
-          </div>
-          <p className="hero-subtitle">{t.mosqueSubtitle}</p>
-
-          <div className="hero-logo">
-            <Image
-              src="/images/mosque/mosque_logo.png"
-              alt="Mosque logo"
-              width={120}
-              height={120}
-              priority
-            />
-          </div>
-
-          <div className="hero-actions-row">
-            <button
-              type="button"
-              className="banner-button"
-              onClick={() => setDonorOpen(true)}
+            <Link
+              className="treasurer-fab treasurer-fab--in-header"
+              href="/treasurer/login"
+              aria-label={t.treasurer}
+              title={t.treasurer}
             >
-              {t.donorList}
-            </button>
+              <span className="treasurer-fab__icon" aria-hidden="true">
+                👤
+              </span>
+            </Link>
+          </div>
 
+          <div className="hero-header__center">
+            <div className="hero-title-row hero-title-row--with-icon">
+              <h1 className="hero-title">{t.mosqueName}</h1>
+              <Link
+                className="treasurer-fab treasurer-fab--mobile"
+                href="/treasurer/login"
+                aria-label={t.treasurer}
+                title={t.treasurer}
+              >
+                <span className="treasurer-fab__icon" aria-hidden="true">
+                  👤
+                </span>
+              </Link>
+            </div>
+            <p className="hero-subtitle">{t.mosqueSubtitle}</p>
+
+            <div className="hero-logo hero-logo--mobile">
+              <Image
+                src="/images/mosque/mosque_logo.png"
+                alt="Mosque logo"
+                width={120}
+                height={120}
+                priority
+              />
+            </div>
+          </div>
+
+          <div className="hero-header__right">
             <label className="language-picker language-picker--inline">
               <span className="sr-only">{t.language}</span>
               <select
@@ -225,6 +241,37 @@ export default function Dashboard({
                 <option value="ur">اردو</option>
               </select>
             </label>
+
+            <button
+              type="button"
+              className="banner-button"
+              onClick={() => setDonorOpen(true)}
+            >
+              {t.donorList}
+            </button>
+          </div>
+
+          {/* Mobile-only stacked controls */}
+          <div className="hero-header__mobile-controls">
+            <label className="language-picker language-picker--inline">
+              <span className="sr-only">{t.language}</span>
+              <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as Language)}
+              >
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option>
+                <option value="ur">اردو</option>
+              </select>
+            </label>
+
+            <button
+              type="button"
+              className="banner-button"
+              onClick={() => setDonorOpen(true)}
+            >
+              {t.donorList}
+            </button>
           </div>
         </div>
 

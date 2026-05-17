@@ -890,6 +890,84 @@ tbody tr:last-child td {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+.hero-banner {
+  background: radial-gradient(circle at center, #3a6270 0%, #2f4c57 55%, #223740 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero-header {
+  display: grid;
+  grid-template-columns: 220px 1fr 240px;
+  gap: 16px;
+  align-items: center;
+}
+
+.hero-header__left,
+.hero-header__right {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+}
+
+.hero-header__left {
+  justify-items: start;
+}
+
+.hero-header__right {
+  justify-items: end;
+}
+
+.hero-header__center {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.hero-logo {
+  display: grid;
+  place-items: center;
+}
+
+.hero-logo--mobile {
+  display: none;
+}
+
+.hero-logo--desktop {
+  display: grid;
+}
+
+.treasurer-fab--in-header {
+  position: static;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(23, 48, 43, 0.14);
+}
+
+.hero-header__mobile-controls {
+  display: none;
+}
+
+.hero-title-row--with-icon {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.treasurer-fab--mobile {
+  display: none;
+  position: static;
+  width: 40px;
+  height: 40px;
+}
+
 @media (max-width: 900px) {
   .dashboard-shell {
     width: min(1200px, calc(100% - 18px));
@@ -971,5 +1049,39 @@ tbody tr:last-child td {
   /* Hide desktop summary grid on mobile (use summary-stack instead) */
   .summary-grid {
     display: none;
+  }
+
+  .hero-header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hero-header__left,
+  .hero-header__right {
+    display: none;
+  }
+
+  .hero-logo--desktop {
+    display: none;
+  }
+
+  .hero-logo--mobile {
+    display: grid;
+    margin-top: 6px;
+  }
+
+  .hero-header__mobile-controls {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .hero-header__mobile-controls .language-picker select,
+  .hero-header__mobile-controls .banner-button {
+    width: 100%;
+  }
+
+  .treasurer-fab--mobile {
+    display: grid;
   }
 }
