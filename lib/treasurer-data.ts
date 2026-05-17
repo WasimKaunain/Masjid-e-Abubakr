@@ -4,7 +4,10 @@ import { addMonths, parseMonthKey } from "@/lib/months";
 
 export async function getTreasurerMonthOptions() {
   const { currentMonth, storedMonths } = await getDashboardMonths();
-  return buildMonthOptions(currentMonth, storedMonths);
+
+  // Add one extra future month so treasurer can start a new month with no rows yet.
+  const nextMonth = addMonths(currentMonth, 1);
+  return buildMonthOptions(nextMonth, [currentMonth, ...storedMonths]);
 }
 
 export async function getDonors() {

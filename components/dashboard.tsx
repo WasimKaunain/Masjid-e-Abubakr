@@ -478,12 +478,14 @@ export default function Dashboard({
       <footer className="site-footer" aria-label="Footer">
         <div className="site-footer__inner">
           <p>
-            © 2026 <strong>Masjid-e-Abubakr</strong>. All rights reserved. Made with
-            {" "}
+            © 2026 <strong>Masjid-e-Abubakr</strong>
+          </p>
+          <p>All rights reserved.</p>
+          <p>
+            Made with love{" "}
             <span aria-label="heart" role="img">
               ❤️
             </span>
-            .
           </p>
         </div>
       </footer>
