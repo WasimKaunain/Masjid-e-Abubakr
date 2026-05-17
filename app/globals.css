@@ -222,6 +222,14 @@ input {
     0 10px 18px rgba(0, 0, 0, 0.22),
     inset 0 2px 0 rgba(255, 255, 255, 0.55),
     inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  text-decoration: none;
+}
+
+/* Ensure Link-styled buttons never show underline */
+a.banner-button,
+a.donor-link,
+a.tab-button {
+  text-decoration: none;
 }
 
 .banner-button:active,
@@ -266,40 +274,44 @@ input {
   margin-top: 24px;
 }
 
+/* Gallery: show full images without fixed frames/overlays */
 .image-strip--scroll {
   display: flex;
   overflow-x: auto;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 16px;
+  padding: 12px 0;
   scroll-snap-type: x mandatory;
-}
-
-.image-frame {
-  position: relative;
-  overflow: hidden;
 }
 
 .image-strip--scroll .image-frame {
   flex: 0 0 auto;
-  width: min(90%, 600px);
-  height: 200px;
-  border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  width: min(92vw, 700px);
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
   scroll-snap-align: start;
-  background: rgba(255, 255, 255, 0.06);
+  background: transparent;
+  overflow: visible;
+}
+
+/* Next/Image with `fill` needs a positioned box; we keep it but make it size to content */
+.image-frame {
+  position: relative;
+  overflow: visible;
+  aspect-ratio: 16 / 9;
 }
 
 .mosque-image {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 @media (max-width: 900px) {
-  .image-strip--scroll {
-    grid-auto-columns: minmax(84%, 90%);
+  .image-strip--scroll .image-frame {
+    width: 92vw;
   }
 
-  .image-strip--scroll .image-frame {
-    width: 90%;
+  .image-frame {
+    aspect-ratio: 4 / 3;
   }
 }
 
@@ -1285,4 +1297,22 @@ tbody tr:last-child td {
     0 12px 22px rgba(0, 0, 0, 0.24),
     inset 0 2px 0 rgba(255, 255, 255, 0.55),
     inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* Footer */
+.site-footer {
+  margin-top: 22px;
+  padding: 18px 0 10px;
+  color: rgba(23, 48, 43, 0.78);
+  text-align: center;
+}
+
+.site-footer__inner {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.site-footer p {
+  margin: 6px 0;
+  font-size: 0.92rem;
 }

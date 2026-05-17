@@ -470,6 +470,22 @@ export default function Dashboard({
           </div>
         )}
       </section>
+
+      <footer className="site-footer" aria-label="Footer">
+        <div className="site-footer__inner">
+          <p>
+            Developed by <strong>Wasim Konain</strong>.
+          </p>
+          <p>
+            © 2026 <strong>Masjid-e-Abubakr</strong>. All rights reserved. Made with
+            {" "}
+            <span aria-label="heart" role="img">
+              ❤️
+            </span>
+            .
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }
