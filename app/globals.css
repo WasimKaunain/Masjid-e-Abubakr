@@ -1202,78 +1202,6 @@ tbody tr:last-child td {
   letter-spacing: 0.2px;
 }
 
-/* Force center alignment for Treasurer banner buttons (Link + button) */
-.hero-header__right .banner-button,
-.hero-header__mobile-controls .banner-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* Donation progress: wider + nicer top row */
-.hero-progress {
-  width: 100%;
-}
-
-.hero-progress__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.hero-progress__title {
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: 0.2px;
-}
-
-.hero-progress__amount {
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-  color: var(--muted);
-  text-align: right;
-  white-space: nowrap;
-}
-
-.progress-track {
-  height: 22px;
-  margin-top: 12px;
-}
-
-/* Treasurer pages: back button pill UI */
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--ink);
-  text-decoration: none;
-  box-shadow: 0 12px 26px rgba(23, 48, 43, 0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.back-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 18px 40px rgba(23, 48, 43, 0.16);
-}
-
-/* Treasurer welcome formatting on dashboard */
-.treasurer-header h1 {
-  margin: 0;
-}
-
-.treasurer-header h1 .name {
-  display: block;
-  white-space: nowrap;
-}
-
 /* --- Image overlap fix ---
    Ensure frames always have their own box when using fill images.
 */
@@ -1335,6 +1263,78 @@ tbody tr:last-child td {
 }
 
 .transaction-desc-row {
+  background: rgba(249, 115, 22, 0.12);
+  border-radius: 999px;
+  margin: 8px 16px 16px;
+  padding: 10px 14px;
+  border: 1px solid rgba(249, 115, 22, 0.18);
+}
+
+.transaction-desc-pill {
+  margin: 8px 16px 16px;
+  text-align: center;
+  color: #9a3412;
+  background: rgba(249, 115, 22, 0.12);
+  border-radius: 999px;
+  padding: 10px 14px;
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  font-weight: 700;
+}
+
+/* Donations tab layout */
+.donation-tab {
+  margin-top: 10px;
+}
+
+.donation-tab__header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.donation-tab__header h2 {
+  margin: 0;
+}
+
+.donation-tab__header p {
+  margin: 8px auto 0;
+  max-width: 68ch;
+  color: var(--muted);
+}
+
+.donation-tab__content {
+  width: 100%;
+}
+
+/* Donation panel should be full width in donation tab */
+.donation-tab .donation-card {
+  width: 100%;
+}
+
+/* Make DonationPanel a clean 2-section layout on desktop, stacked on mobile */
+.donation-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+
+.donation-action-card {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.donation-action-card input {
+  outline: none;
+}
+
+.donation-action-card input:focus {
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
+}
+
+.quick-amounts {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -1442,132 +1442,46 @@ tbody tr:last-child td {
   padding: 12px 18px;
 }
 
-/* Spinner (used on submit/confirm buttons) */
-.button-spinner {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.55);
-  border-top-color: rgba(255, 255, 255, 0.08);
-  display: inline-block;
-  animation: spin 0.8s linear infinite;
-}
-
-.primary-button .button-spinner {
-  margin-right: 10px;
-}
-
-.pill-button .button-spinner {
-  margin-right: 10px;
-  border-color: rgba(23, 48, 43, 0.25);
-  border-top-color: rgba(23, 48, 43, 0.08);
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Primary pill variant */
-.pill-button--primary {
-  background: linear-gradient(135deg, var(--emerald-deep), var(--emerald));
-  border-color: rgba(15, 118, 110, 0.25);
-  color: white;
-}
-
-/* Bulk donations (mobile-friendly list, no horizontal scrolling) */
-.bulk-list {
-  display: grid;
-  gap: 10px;
-}
-
-.bulk-row {
-  display: grid;
-  grid-template-columns: 20px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
-  padding: 12px 14px;
-}
-
-.bulk-check {
-  width: 18px;
-  height: 18px;
-}
-
-.bulk-name {
-  font-weight: 800;
-  min-width: 0;
+/* Selectable tables (row-click selection like Bulk Donations / Delete Transactions) */
+.table-shell--selectable {
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.select-table th.amount,
+.select-table td.amount {
+  text-align: right;
   white-space: nowrap;
 }
 
-.bulk-amount {
+.select-table tbody tr {
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.select-table tbody tr:hover {
+  background: rgba(15, 118, 110, 0.06);
+}
+
+.select-table tbody tr:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.25);
+  outline-offset: -3px;
+}
+
+.select-table tbody tr.row-selected {
+  background: rgba(34, 197, 94, 0.18);
+}
+
+.select-table tbody tr.row-selected td {
   font-weight: 800;
-  color: var(--ink);
-}
-
-/* Preview modal */
-.modal-card.bulk-preview {
-  width: min(720px, 100%);
-}
-
-.bulk-preview__list {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.bulk-preview__row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.8);
-  padding: 12px 14px;
-}
-
-.bulk-preview__name {
-  font-weight: 800;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bulk-preview__amount {
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.bulk-preview__totals {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  text-align: center;
-}
-
-.bulk-preview__totals-sep {
-  margin: 0 8px;
-  color: var(--muted);
-}
-
-.bulk-preview__actions {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
 }
 
 @media (max-width: 520px) {
-  .bulk-preview__actions {
-    grid-template-columns: 1fr;
+  .select-table th,
+  .select-table td {
+    padding: 12px;
+  }
+
+  .select-table th {
+    font-size: 0.75rem;
   }
 }

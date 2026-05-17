@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { monthKey, monthLabel } from "@/lib/months";
 
@@ -23,6 +23,8 @@ export default function DeleteTransactionsForm({
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [message, setMessage] = useState("");
+
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 
   function toggle(id: number) {
     setSelectedIds((current) =>
@@ -62,34 +64,42 @@ export default function DeleteTransactionsForm({
           ))}
         </select>
       </label>
-      <div className="table-shell">
-        <table>
+
+      <div className="table-shell table-shell--selectable">
+        <table className="select-table" aria-label="Transactions">
           <thead>
             <tr>
-              <th>Select</th>
               <th>Name</th>
-              <th>Amount</th>
-              <th>Type</th>
+              <th className="amount">Amount</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map((transaction) => (
-              <tr key={transaction.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(transaction.id)}
-                    onChange={() => toggle(transaction.id)}
-                  />
-                </td>
-                <td>{transaction.Name ?? "—"}</td>
-                <td>₹{transaction.Amount.toFixed(2)}</td>
-                <td>{transaction.Type ?? "—"}</td>
-              </tr>
-            ))}
+            {transactions.map((transaction) => {
+              const isSelected = selectedSet.has(transaction.id);
+              return (
+                <tr
+                  key={transaction.id}
+                  className={isSelected ? "row-selected" : ""}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={isSelected}
+                  onClick={() => toggle(transaction.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggle(transaction.id);
+                    }
+                  }}
+                >
+                  <td>{transaction.Name ?? "—"}</td>
+                  <td className="amount">₹{transaction.Amount.toFixed(2)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
       {message && <p className="form-message">{message}</p>}
       <button className="primary-button">Delete selected</button>
     </form>
