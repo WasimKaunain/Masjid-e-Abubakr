@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { monthLabel, parseMonthKey } from "@/lib/months";
 
@@ -40,6 +40,11 @@ type Language = "en" | "hi" | "ur";
 
 const copy = {
   en: {
+    mosqueName: "Masjide AbuBakr",
+    mosqueSubtitle: "Masjide AbuBakr",
+    treasurer: "Treasurer",
+    donorList: "Donor List",
+    language: "Language",
     transactions: "Transactions",
     donations: "Donations",
     month: "Choose month",
@@ -63,6 +68,11 @@ const copy = {
     missingUpi: "UPI ID is not configured yet.",
   },
   hi: {
+    mosqueName: "मस्जिद अबू बक्र",
+    mosqueSubtitle: "Masjide AbuBakr",
+    treasurer: "खजांची",
+    donorList: "दाता सूची",
+    language: "भाषा",
     transactions: "लेन-देन",
     donations: "दान",
     month: "महीना चुनें",
@@ -86,6 +96,11 @@ const copy = {
     missingUpi: "UPI ID अभी सेट नहीं है।",
   },
   ur: {
+    mosqueName: "مسجد ابو بکر",
+    mosqueSubtitle: "Masjide AbuBakr",
+    treasurer: "خزانچی",
+    donorList: "عطیہ دہندگان",
+    language: "زبان",
     transactions: "لین دین",
     donations: "عطیات",
     month: "مہینہ منتخب کریں",
@@ -111,9 +126,9 @@ const copy = {
 } satisfies Record<Language, Record<string, string>>;
 
 const mosqueImages = [
-  "/images/mosque/mosque-hero-1.jpg",
-  "/images/mosque/mosque-hero-2.jpg",
-  "/images/mosque/mosque-hero-3.jpg",
+  "/images/mosque/mosque-hero-1.jpeg",
+  "/images/mosque/mosque-hero-2.jpeg",
+  "/images/mosque/mosque-hero-3.jpeg",
 ];
 
 function formatCurrency(value: number) {
@@ -147,6 +162,7 @@ export default function Dashboard({
     "transactions",
   );
   const [language, setLanguage] = useState<Language>("en");
+  const [donorOpen, setDonorOpen] = useState(false);
   const t = copy[language];
 
   const selectedMonth = useMemo(
@@ -157,21 +173,20 @@ export default function Dashboard({
   return (
     <main className={`dashboard-shell ${language === "ur" ? "rtl" : ""}`}>
       <header className="hero-card">
-        <div className="top-row">
-          <div>
-            <p className="eyebrow">Masjide AbuBakr</p>
-            <h1>Masjide AbuBakr</h1>
+        <div className="top-row top-row--hero">
+          <div className="hero-left">
+            <Link className="donor-link" href="/treasurer/login">
+              {t.treasurer}
+            </Link>
           </div>
 
-          <div className="header-actions">
-            <Link className="soft-link" href="/donors" target="_blank">
-              Donor List
-            </Link>
-            <Link className="primary-link" href="/treasurer/login">
-              Treasurer
-            </Link>
+          <div className="hero-center">
+            <h1 className="hero-title">{t.mosqueName}</h1>
+          </div>
+
+          <div className="hero-right">
             <label className="language-picker">
-              <span>Language</span>
+              <span>{t.language}</span>
               <select
                 value={language}
                 onChange={(event) => setLanguage(event.target.value as Language)}
@@ -181,23 +196,39 @@ export default function Dashboard({
                 <option value="ur">اردو</option>
               </select>
             </label>
+            <button
+              type="button"
+              className="donor-link"
+              onClick={() => setDonorOpen(true)}
+            >
+              {t.donorList}
+            </button>
           </div>
         </div>
 
-        <section className="image-strip" aria-label="Mosque gallery">
+        <section className="image-strip image-strip--scroll" aria-label="Mosque gallery">
           {mosqueImages.map((src, index) => (
             <div className="image-frame" key={src}>
               <Image
                 src={src}
-                alt={`Mosque view ${index + 1}`}
+                alt={`${t.mosqueName} ${index + 1}`}
                 fill
-                sizes="(max-width: 900px) 100vw, 33vw"
+                sizes="(max-width: 900px) 86vw, 33vw"
                 className="mosque-image"
+                priority={index === 0}
               />
             </div>
           ))}
         </section>
+
+        <DonationProgressHero
+          progress={donationProgress}
+          label={t.currentProgress}
+          mosqueName={t.mosqueName}
+        />
       </header>
+
+      {donorOpen && <DonorModal onClose={() => setDonorOpen(false)} />}
 
       <section className="panel">
         <div className="tab-row">
@@ -232,7 +263,6 @@ export default function Dashboard({
                   const label = date ? monthLabel(date) : option;
                   return (
                     <option value={option} key={option}>
-                      {option === currentMonthKey ? `${t.currentMonth} — ` : ""}
                       {label}
                     </option>
                   );
@@ -244,11 +274,11 @@ export default function Dashboard({
 
         {activeTab === "transactions" ? (
           <>
-            <div className="section-heading">
+            <div className="section-heading section-heading--table">
               <h2>{selectedMonth ? monthLabel(selectedMonth) : selectedMonthKey}</h2>
             </div>
 
-            <div className="table-shell">
+            <div className="table-shell transactions-table" aria-label={t.transactions}>
               <table>
                 <thead>
                   <tr>
@@ -289,6 +319,29 @@ export default function Dashboard({
               </table>
             </div>
 
+            <div className="transactions-cards" aria-label="Transactions (mobile)">
+              {transactions.length === 0 ? (
+                <div className="empty-state">{t.noTransactions}</div>
+              ) : (
+                transactions.map((transaction) => (
+                  <article key={transaction.id} className="transaction-row--compact">
+                    <span className="name">{transaction.Name ?? "—"}</span>
+                    <span className="amount">{formatCurrency(transaction.Amount)}</span>
+                    <span className="type">
+                      <span
+                        className={`pill ${
+                          transaction.Type === "Credit" ? "credit" : "debit"
+                        }`}
+                      >
+                        {transaction.Type ?? "—"}
+                      </span>
+                    </span>
+                    <span className="desc">{transaction.Description ?? "—"}</span>
+                  </article>
+                ))
+              )}
+            </div>
+
             <div className="summary-grid">
               <article>
                 <span>{t.totalCredit}</span>
@@ -297,10 +350,6 @@ export default function Dashboard({
               <article>
                 <span>{t.totalDebit}</span>
                 <strong>{formatCurrency(summary.totalDebit)}</strong>
-              </article>
-              <article>
-                <span>{t.previousBalance}</span>
-                <strong>{formatCurrency(summary.previousBalance)}</strong>
               </article>
               <article>
                 <span>{t.remaining}</span>
@@ -326,6 +375,118 @@ export default function Dashboard({
         )}
       </section>
     </main>
+  );
+}
+
+function DonationProgressHero({
+  progress,
+  label,
+  mosqueName,
+}: {
+  progress: { current: number; target: number };
+  label: string;
+  mosqueName: string;
+}) {
+  const percent =
+    progress.target > 0
+      ? Math.min(100, (progress.current / progress.target) * 100)
+      : 0;
+
+  const [animated, setAnimated] = useState(0);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setAnimated(percent), 80);
+    return () => window.clearTimeout(timeout);
+  }, [percent]);
+
+  const achieved = percent >= 100 && progress.target > 0;
+
+  return (
+    <section className={`hero-progress ${achieved ? "achieved" : ""}`}>
+      <div className="hero-progress__top">
+        <strong>{label}</strong>
+        <span>
+          {formatCurrency(progress.current)} / {formatCurrency(progress.target)}
+        </span>
+      </div>
+      <div className="progress-track" aria-label={label}>
+        <div className="progress-fill" style={{ width: `${animated}%` }} />
+      </div>
+      {achieved && (
+        <p className="hero-progress__note">Goal achieved for {mosqueName}.</p>
+      )}
+    </section>
+  );
+}
+
+function DonorModal({ onClose }: { onClose: () => void }) {
+  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<
+    { id: number; name: string; amount: number; paid_or_not: boolean }[]
+  >([]);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await fetch("/api/public/donors");
+        const data = (await res.json()) as {
+          donors?: { id: number; name: string; amount: number; paid_or_not: boolean }[];
+          message?: string;
+        };
+        if (!res.ok) throw new Error(data.message ?? "Unable to load donors");
+        if (mounted) setRows(data.donors ?? []);
+      } catch (e) {
+        if (mounted) setError(e instanceof Error ? e.message : "Unable to load donors");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    void load();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="modal-backdrop" role="dialog" aria-modal="true">
+      <div className="modal-card">
+        <button className="modal-close" type="button" onClick={onClose} aria-label="Close">
+          ×
+        </button>
+        <h2 className="modal-title">Donor List</h2>
+
+        {loading ? (
+          <p className="modal-note">Loading...</p>
+        ) : error ? (
+          <p className="modal-note">{error}</p>
+        ) : (
+          <div className="donor-list">
+            {rows.map((donor) => (
+              <div className="donor-row" key={donor.id}>
+                <span className="donor-row__name">{donor.name}</span>
+                <span className="donor-row__amount">₹{donor.amount.toFixed(2)}</span>
+                <span className={`status ${donor.paid_or_not ? "paid" : "unpaid"}`}>
+                  {donor.paid_or_not ? "✓ Paid" : "✕ Due"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

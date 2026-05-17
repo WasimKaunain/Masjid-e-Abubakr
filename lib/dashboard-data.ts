@@ -14,6 +14,10 @@ function toNumber(value: string | number | null | undefined) {
   return value == null ? 0 : Number(value);
 }
 
+function reportRowKey(monthKeyValue: string) {
+  return `transactions_${monthKeyValue.replace(/-/g, "_")}`;
+}
+
 export async function getDashboardMonths() {
   const latestTransaction = await prisma.transactions.findFirst({
     where: {
@@ -52,8 +56,9 @@ export async function getDashboardMonths() {
 
 export async function getMonthTransactions(selectedMonth: Date) {
   const nextMonth = addMonths(selectedMonth, 1);
+  const selectedKey = monthKey(selectedMonth);
 
-  const [transactions, totals, previousTotals] = await Promise.all([
+  const [transactions, reportRow, monthAgg, previousAgg] = await Promise.all([
     prisma.transactions.findMany({
       where: {
         Timestamp: {
@@ -73,27 +78,52 @@ export async function getMonthTransactions(selectedMonth: Date) {
         Timestamp: true,
       },
     }),
-    prisma.$queryRaw<SumRow[]>`
-      SELECT
-        COALESCE(SUM(CASE WHEN "Type" = 'Credit' THEN "Amount" ELSE 0 END), 0) AS credit,
-        COALESCE(SUM(CASE WHEN "Type" = 'Debit' THEN "Amount" ELSE 0 END), 0) AS debit
-      FROM transactions
-      WHERE "Timestamp" >= ${selectedMonth}
-        AND "Timestamp" < ${nextMonth}
-    `,
-    prisma.$queryRaw<SumRow[]>`
-      SELECT
-        COALESCE(SUM(CASE WHEN "Type" = 'Credit' THEN "Amount" ELSE 0 END), 0) AS credit,
-        COALESCE(SUM(CASE WHEN "Type" = 'Debit' THEN "Amount" ELSE 0 END), 0) AS debit
-      FROM transactions
-      WHERE "Timestamp" < ${selectedMonth}
-    `,
+    prisma.monthly_report.findUnique({
+      where: { month_name: reportRowKey(selectedKey) },
+    }),
+    prisma.transactions.groupBy({
+      by: ["Type"],
+      where: {
+        Timestamp: {
+          gte: selectedMonth,
+          lt: nextMonth,
+        },
+        Type: { in: ["Credit", "Debit"] },
+      },
+      _sum: { Amount: true },
+    }),
+    prisma.transactions.groupBy({
+      by: ["Type"],
+      where: {
+        Timestamp: {
+          lt: selectedMonth,
+        },
+        Type: { in: ["Credit", "Debit"] },
+      },
+      _sum: { Amount: true },
+    }),
   ]);
 
-  const totalCredit = toNumber(totals[0]?.credit);
-  const totalDebit = toNumber(totals[0]?.debit);
-  const previousBalance =
-    toNumber(previousTotals[0]?.credit) - toNumber(previousTotals[0]?.debit);
+  const fallbackTotalCredit = Number(
+    monthAgg.find((row) => row.Type === "Credit")?._sum.Amount ?? 0,
+  );
+  const fallbackTotalDebit = Number(
+    monthAgg.find((row) => row.Type === "Debit")?._sum.Amount ?? 0,
+  );
+  const fallbackPreviousBalance =
+    Number(previousAgg.find((row) => row.Type === "Credit")?._sum.Amount ?? 0) -
+    Number(previousAgg.find((row) => row.Type === "Debit")?._sum.Amount ?? 0);
+
+  const totalCredit = reportRow ? Number(reportRow.total_credit) : fallbackTotalCredit;
+  const totalDebit = reportRow
+    ? Number(reportRow.total_debit ?? 0)
+    : fallbackTotalDebit;
+  const remaining = reportRow
+    ? Number(reportRow.remaining_amount)
+    : totalCredit - totalDebit;
+  const closingBalance = reportRow
+    ? Number(reportRow.total_remaining_amount ?? remaining)
+    : fallbackPreviousBalance + remaining;
 
   return {
     transactions: transactions.map((transaction) => ({
@@ -104,9 +134,9 @@ export async function getMonthTransactions(selectedMonth: Date) {
     summary: {
       totalCredit,
       totalDebit,
-      previousBalance,
-      remaining: totalCredit - totalDebit,
-      closingBalance: previousBalance + totalCredit - totalDebit,
+      previousBalance: reportRow ? Number(reportRow.previous_amount ?? 0) : fallbackPreviousBalance,
+      remaining,
+      closingBalance,
     },
   };
 }

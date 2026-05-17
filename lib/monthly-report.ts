@@ -11,6 +11,11 @@ function toNumber(value: string | number | null | undefined) {
   return value == null ? 0 : Number(value);
 }
 
+function reportRowKey(monthKeyValue: string) {
+  const value = monthKeyValue.replace(/-/g, "_");
+  return `transactions_${value}`;
+}
+
 export async function recalculateMonthlyReport(
   selectedMonthKey: string,
   options?: {
@@ -23,31 +28,44 @@ export async function recalculateMonthlyReport(
   }
 
   const nextMonth = addMonths(selectedMonth, 1);
+
   const [totals, previousTotals, existingReport] = await Promise.all([
-    prisma.$queryRaw<SumRow[]>`
-      SELECT
-        COALESCE(SUM(CASE WHEN "Type" = 'Credit' THEN "Amount" ELSE 0 END), 0) AS credit,
-        COALESCE(SUM(CASE WHEN "Type" = 'Debit' THEN "Amount" ELSE 0 END), 0) AS debit
-      FROM transactions
-      WHERE "Timestamp" >= ${selectedMonth}
-        AND "Timestamp" < ${nextMonth}
-    `,
-    prisma.$queryRaw<SumRow[]>`
-      SELECT
-        COALESCE(SUM(CASE WHEN "Type" = 'Credit' THEN "Amount" ELSE 0 END), 0) AS credit,
-        COALESCE(SUM(CASE WHEN "Type" = 'Debit' THEN "Amount" ELSE 0 END), 0) AS debit
-      FROM transactions
-      WHERE "Timestamp" < ${selectedMonth}
-    `,
+    prisma.transactions.groupBy({
+      by: ["Type"],
+      where: {
+        Timestamp: {
+          gte: selectedMonth,
+          lt: nextMonth,
+        },
+        Type: { in: ["Credit", "Debit"] },
+      },
+      _sum: { Amount: true },
+    }),
+    prisma.transactions.groupBy({
+      by: ["Type"],
+      where: {
+        Timestamp: {
+          lt: selectedMonth,
+        },
+        Type: { in: ["Credit", "Debit"] },
+      },
+      _sum: { Amount: true },
+    }),
     prisma.monthly_report.findUnique({
-      where: { month_name: selectedMonthKey },
+      where: { month_name: reportRowKey(selectedMonthKey) },
     }),
   ]);
 
-  const totalCredit = toNumber(totals[0]?.credit);
-  const totalDebit = toNumber(totals[0]?.debit);
+  const totalCredit = Number(
+    totals.find((row) => row.Type === "Credit")?._sum.Amount ?? 0,
+  );
+  const totalDebit = Number(
+    totals.find((row) => row.Type === "Debit")?._sum.Amount ?? 0,
+  );
   const previousAmount =
-    toNumber(previousTotals[0]?.credit) - toNumber(previousTotals[0]?.debit);
+    Number(previousTotals.find((row) => row.Type === "Credit")?._sum.Amount ?? 0) -
+    Number(previousTotals.find((row) => row.Type === "Debit")?._sum.Amount ?? 0);
+
   const remainingAmount = totalCredit - totalDebit;
   const totalRemainingAmount = previousAmount + remainingAmount;
   const dueCount =
@@ -55,9 +73,9 @@ export async function recalculateMonthlyReport(
     (existingReport?.due_count ? Number(existingReport.due_count) : 0);
 
   return prisma.monthly_report.upsert({
-    where: { month_name: selectedMonthKey },
+    where: { month_name: reportRowKey(selectedMonthKey) },
     create: {
-      month_name: selectedMonthKey,
+      month_name: reportRowKey(selectedMonthKey),
       total_credit: new Decimal(totalCredit),
       total_debit: new Decimal(totalDebit),
       remaining_amount: new Decimal(remainingAmount),
@@ -77,7 +95,9 @@ export async function recalculateMonthlyReport(
 }
 
 export function reportMonthKeyFromDate(value: Date) {
-  return monthKey(new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), 1)));
+  return reportRowKey(
+    monthKey(new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), 1))),
+  );
 }
 
 export async function recalculateReportsFrom(selectedMonthKey: string) {
