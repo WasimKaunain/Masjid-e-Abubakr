@@ -33,6 +33,7 @@ export async function recalculateMonthlyReport(
     prisma.transactions.groupBy({
       by: ["Type"],
       where: {
+        
         Timestamp: {
           gte: selectedMonth,
           lt: nextMonth,

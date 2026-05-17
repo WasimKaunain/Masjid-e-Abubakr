@@ -203,18 +203,8 @@ export default function Dashboard({
           </div>
 
           <div className="hero-header__center">
-            <div className="hero-title-row hero-title-row--with-icon">
+            <div className="hero-title-row">
               <h1 className="hero-title">{t.mosqueName}</h1>
-              <Link
-                className="treasurer-fab treasurer-fab--mobile"
-                href="/treasurer/login"
-                aria-label={t.treasurer}
-                title={t.treasurer}
-              >
-                <span className="treasurer-fab__icon" aria-hidden="true">
-                  👤
-                </span>
-              </Link>
             </div>
             <p className="hero-subtitle">{t.mosqueSubtitle}</p>
 
@@ -249,6 +239,15 @@ export default function Dashboard({
             >
               {t.donorList}
             </button>
+
+            <Link
+              className="banner-button"
+              href="/treasurer/login"
+              aria-label={t.treasurer}
+              title={t.treasurer}
+            >
+              {t.treasurer}
+            </Link>
           </div>
 
           {/* Mobile-only stacked controls */}
@@ -272,6 +271,15 @@ export default function Dashboard({
             >
               {t.donorList}
             </button>
+
+            <Link
+              className="banner-button"
+              href="/treasurer/login"
+              aria-label={t.treasurer}
+              title={t.treasurer}
+            >
+              {t.treasurer}
+            </Link>
           </div>
         </div>
       </header>
@@ -357,33 +365,46 @@ export default function Dashboard({
                     <th>{t.donor}</th>
                     <th>{t.amount}</th>
                     <th>{t.type}</th>
-                    <th>{t.description}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions.length === 0 ? (
                     <tr>
-                      <td className="empty-state" colSpan={4}>
+                      <td className="empty-state" colSpan={3}>
                         {t.noTransactions}
                       </td>
                     </tr>
                   ) : (
-                    transactions.map((transaction) => (
-                      <tr key={transaction.id}>
-                        <td>{transaction.Name ?? "—"}</td>
-                        <td>{formatCurrency(transaction.Amount)}</td>
-                        <td>
-                          <span
-                            className={`pill ${
-                              transaction.Type === "Credit" ? "credit" : "debit"
-                            }`}
-                          >
-                            {transaction.Type ?? "—"}
-                          </span>
-                        </td>
-                        <td>{transaction.Description ?? "—"}</td>
-                      </tr>
-                    ))
+                    transactions.flatMap((transaction) => {
+                      const row = (
+                        <tr key={transaction.id}>
+                          <td>{transaction.Name ?? "—"}</td>
+                          <td>{formatCurrency(transaction.Amount)}</td>
+                          <td>
+                            <span
+                              className={`pill ${
+                                transaction.Type === "Credit" ? "credit" : "debit"
+                              }`}
+                            >
+                              {transaction.Type ?? "—"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+
+                      const debitDesc =
+                        transaction.Type === "Debit" && transaction.Description
+                          ? (
+                              <tr key={`${transaction.id}-desc`}>
+                                <td colSpan={3} className="transaction-desc-row">
+                                  {transaction.Description}
+                                </td>
+                              </tr>
+                            )
+                          : null;
+
+                      return debitDesc ? [row, debitDesc] : [row];
+                    })
                   )}
                 </tbody>
               </table>
