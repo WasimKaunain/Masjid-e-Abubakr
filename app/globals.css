@@ -1202,6 +1202,78 @@ tbody tr:last-child td {
   letter-spacing: 0.2px;
 }
 
+/* Force center alignment for Treasurer banner buttons (Link + button) */
+.hero-header__right .banner-button,
+.hero-header__mobile-controls .banner-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Donation progress: wider + nicer top row */
+.hero-progress {
+  width: 100%;
+}
+
+.hero-progress__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-progress__title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.hero-progress__amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.progress-track {
+  height: 22px;
+  margin-top: 12px;
+}
+
+/* Treasurer pages: back button pill UI */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 12px 26px rgba(23, 48, 43, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.back-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(23, 48, 43, 0.16);
+}
+
+/* Treasurer welcome formatting on dashboard */
+.treasurer-header h1 {
+  margin: 0;
+}
+
+.treasurer-header h1 .name {
+  display: block;
+  white-space: nowrap;
+}
+
 /* --- Image overlap fix ---
    Ensure frames always have their own box when using fill images.
 */
@@ -1263,78 +1335,6 @@ tbody tr:last-child td {
 }
 
 .transaction-desc-row {
-  background: rgba(249, 115, 22, 0.12);
-  border-radius: 999px;
-  margin: 8px 16px 16px;
-  padding: 10px 14px;
-  border: 1px solid rgba(249, 115, 22, 0.18);
-}
-
-.transaction-desc-pill {
-  margin: 8px 16px 16px;
-  text-align: center;
-  color: #9a3412;
-  background: rgba(249, 115, 22, 0.12);
-  border-radius: 999px;
-  padding: 10px 14px;
-  border: 1px solid rgba(249, 115, 22, 0.18);
-  font-weight: 700;
-}
-
-/* Donations tab layout */
-.donation-tab {
-  margin-top: 10px;
-}
-
-.donation-tab__header {
-  text-align: center;
-  margin-bottom: 14px;
-}
-
-.donation-tab__header h2 {
-  margin: 0;
-}
-
-.donation-tab__header p {
-  margin: 8px auto 0;
-  max-width: 68ch;
-  color: var(--muted);
-}
-
-.donation-tab__content {
-  width: 100%;
-}
-
-/* Donation panel should be full width in donation tab */
-.donation-tab .donation-card {
-  width: 100%;
-}
-
-/* Make DonationPanel a clean 2-section layout on desktop, stacked on mobile */
-.donation-layout {
-  display: grid;
-  grid-template-columns: 1fr 420px;
-  gap: 18px;
-  align-items: start;
-}
-
-.donation-action-card {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.donation-action-card input {
-  outline: none;
-}
-
-.donation-action-card input:focus {
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.25);
-}
-
-.quick-amounts {
-  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 

@@ -528,8 +528,8 @@ function DonationProgressHero({
   return (
     <section className={`hero-progress ${achieved ? "achieved" : ""}`}>
       <div className="hero-progress__top">
-        <strong>{title}</strong>
-        <span>
+        <strong className="hero-progress__title">{title}</strong>
+        <span className="hero-progress__amount">
           {formatCurrency(progress.current)} / {formatCurrency(progress.target)}
         </span>
       </div>
