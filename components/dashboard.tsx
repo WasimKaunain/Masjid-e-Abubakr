@@ -40,8 +40,8 @@ type Language = "en" | "hi" | "ur";
 
 const copy = {
   en: {
-    mosqueName: "Masjide AbuBakr",
-    mosqueSubtitle: "Masjide AbuBakr",
+    mosqueName: "Masjid-e-Abubakr",
+    mosqueSubtitle: "A place of peace, prayer and purpose",
     treasurer: "Treasurer",
     donorList: "Donor List",
     language: "Language",
@@ -55,8 +55,8 @@ const copy = {
     type: "Type",
     description: "Description",
     noTransactions: "No transactions recorded for this month yet.",
-    totalCredit: "Total credit",
-    totalDebit: "Total debit",
+    totalCredit: "Total credited amount",
+    totalDebit: "Total debited amount",
     previousBalance: "Previous balance",
     remaining: "Month remaining",
     closingBalance: "Closing balance",
@@ -68,8 +68,8 @@ const copy = {
     missingUpi: "UPI ID is not configured yet.",
   },
   hi: {
-    mosqueName: "मस्जिद अबू बक्र",
-    mosqueSubtitle: "Masjide AbuBakr",
+    mosqueName: "Masjid-e-Abubakr",
+    mosqueSubtitle: "A place of peace, prayer and purpose",
     treasurer: "खजांची",
     donorList: "दाता सूची",
     language: "भाषा",
@@ -83,8 +83,8 @@ const copy = {
     type: "प्रकार",
     description: "विवरण",
     noTransactions: "इस महीने के लिए अभी कोई लेन-देन दर्ज नहीं है।",
-    totalCredit: "कुल जमा",
-    totalDebit: "कुल खर्च",
+    totalCredit: "कुल जमा राशि",
+    totalDebit: "कुल खर्च राशि",
     previousBalance: "पिछला शेष",
     remaining: "महीने का शेष",
     closingBalance: "अंतिम शेष",
@@ -96,8 +96,8 @@ const copy = {
     missingUpi: "UPI ID अभी सेट नहीं है।",
   },
   ur: {
-    mosqueName: "مسجد ابو بکر",
-    mosqueSubtitle: "Masjide AbuBakr",
+    mosqueName: "Masjid-e-Abubakr",
+    mosqueSubtitle: "A place of peace, prayer and purpose",
     treasurer: "خزانچی",
     donorList: "عطیہ دہندگان",
     language: "زبان",
@@ -111,7 +111,7 @@ const copy = {
     type: "قسم",
     description: "تفصیل",
     noTransactions: "اس مہینے کے لیے ابھی کوئی لین دین درج نہیں ہوا۔",
-    totalCredit: "کل آمدنی",
+    totalCredit: "کل وصولی",
     totalDebit: "کل خرچ",
     previousBalance: "پچھلا بیلنس",
     remaining: "ماہانہ باقی",
@@ -177,29 +177,45 @@ export default function Dashboard({
 
   return (
     <main className={`dashboard-shell ${language === "ur" ? "rtl" : ""}`}>
-      <header className="hero-card">
-        <Link className="treasurer-fab" href="/treasurer/login" aria-label={t.treasurer}>
+      <header className="hero-card hero-banner">
+        <Link
+          className="treasurer-fab"
+          href="/treasurer/login"
+          aria-label={t.treasurer}
+          title={t.treasurer}
+        >
           <span className="treasurer-fab__icon" aria-hidden="true">
             👤
           </span>
         </Link>
 
-        <div className="top-row top-row--hero">
-          <div className="hero-center">
+        <div className="hero-stack">
+          <div className="hero-title-row">
             <h1 className="hero-title">{t.mosqueName}</h1>
           </div>
+          <p className="hero-subtitle">{t.mosqueSubtitle}</p>
 
-          <div className="hero-right hero-controls">
+          <div className="hero-logo">
+            <Image
+              src="/images/mosque/mosque_logo.png"
+              alt="Mosque logo"
+              width={120}
+              height={120}
+              priority
+            />
+          </div>
+
+          <div className="hero-actions-row">
             <button
               type="button"
-              className="donor-link"
+              className="banner-button"
               onClick={() => setDonorOpen(true)}
             >
               {t.donorList}
             </button>
 
-            <label className="language-picker">
-              <span>{t.language}</span>
+            <label className="language-picker language-picker--inline">
+              <span className="sr-only">{t.language}</span>
               <select
                 value={language}
                 onChange={(event) => setLanguage(event.target.value as Language)}
@@ -231,7 +247,7 @@ export default function Dashboard({
         </section>
 
         <DonationProgressHero
-          title="Donation Progress Bar"
+          title="Donation Goal"
           progress={donationProgress}
           mosqueName={t.mosqueName}
         />
@@ -343,22 +359,24 @@ export default function Dashboard({
                         {transaction.Type ?? "—"}
                       </span>
                     </span>
-                    <span className="desc">{transaction.Description ?? "—"}</span>
+                    {transaction.Type === "Debit" ? (
+                      <span className="desc">{transaction.Description ?? "—"}</span>
+                    ) : null}
                   </article>
                 ))
               )}
             </div>
 
             <div className="summary-stack">
-              <article className="summary-card">
+              <article className="summary-card capsule-card">
                 <span>{t.totalCredit}</span>
                 <strong>{formatCurrency(summary.totalCredit)}</strong>
               </article>
-              <article className="summary-card">
+              <article className="summary-card capsule-card">
                 <span>{t.totalDebit}</span>
                 <strong>{formatCurrency(summary.totalDebit)}</strong>
               </article>
-              <article className="summary-card closing-card">
+              <article className="summary-card capsule-card">
                 <span>{t.closingBalance}</span>
                 <strong>{formatCurrency(summary.closingBalance)}</strong>
               </article>
