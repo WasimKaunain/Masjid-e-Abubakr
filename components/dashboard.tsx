@@ -274,31 +274,31 @@ export default function Dashboard({
             </button>
           </div>
         </div>
-
-        <section
-          className="image-strip image-strip--scroll"
-          aria-label="Mosque gallery"
-        >
-          {mosqueImages.map((src, index) => (
-            <div className="image-frame" key={src}>
-              <Image
-                src={src}
-                alt={`${t.mosqueName} ${index + 1}`}
-                fill
-                sizes="(max-width: 900px) 92vw, 33vw"
-                className="mosque-image"
-                priority={index === 0}
-              />
-            </div>
-          ))}
-        </section>
-
-        <DonationProgressHero
-          title="Donation Goal"
-          progress={donationProgress}
-          mosqueName={t.mosqueName}
-        />
       </header>
+
+      <section
+        className="image-strip image-strip--scroll"
+        aria-label="Mosque gallery"
+      >
+        {mosqueImages.map((src, index) => (
+          <div className="image-frame" key={src}>
+            <Image
+              src={src}
+              alt={`${t.mosqueName} ${index + 1}`}
+              fill
+              sizes="(max-width: 900px) 92vw, 33vw"
+              className="mosque-image"
+              priority={index === 0}
+            />
+          </div>
+        ))}
+      </section>
+
+      <DonationProgressHero
+        title="Donation Goal"
+        progress={donationProgress}
+        mosqueName={t.mosqueName}
+      />
 
       {donorOpen && <DonorModal onClose={() => setDonorOpen(false)} />}
 
