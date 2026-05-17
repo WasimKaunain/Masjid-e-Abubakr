@@ -1485,3 +1485,17 @@ tbody tr:last-child td {
     font-size: 0.75rem;
   }
 }
+
+/* Force Treasurer (and other banner buttons) text to stay centered */
+.banner-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-header__right .banner-button,
+.hero-header__mobile-controls .banner-button {
+  justify-content: center;
+  text-align: center;
+}

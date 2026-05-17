@@ -22,7 +22,7 @@ export default function TransactionForm({
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   function selectDonor(value: string) {
     setName(value);
@@ -32,114 +32,120 @@ export default function TransactionForm({
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    if (submitting) return;
+    const response = await fetch("/api/treasurer/transactions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        month,
+        type,
+        name: type === "Credit" ? name : undefined,
+        amount: Number(amount),
+        description: type === "Debit" ? description : undefined,
+      }),
+    });
+    const data = await response.json();
 
-    try {
-      setSubmitting(true);
-      const response = await fetch("/api/treasurer/transactions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          month,
-          type,
-          name: type === "Credit" ? name : undefined,
-          amount: Number(amount),
-          description: type === "Debit" ? description : undefined,
-        }),
-      });
-      const data = await response.json();
-      setMessage(response.ok ? "Transaction saved." : data.message);
-      if (response.ok) {
-        setName("");
-        setAmount("");
-        setDescription("");
-      }
-    } finally {
-      setSubmitting(false);
+    if (response.ok) {
+      setMessage("");
+      setSuccessOpen(true);
+      setName("");
+      setAmount("");
+      setDescription("");
+      return;
     }
+
+    setMessage(data.message ?? "Unable to save transaction");
   }
 
   return (
-    <form className="form-stack form-stack--polished" onSubmit={submit}>
-      <div className="form-grid">
-        <label>
-          <span>Month</span>
-          <select
-            value={month}
-            onChange={(event) => setMonth(event.target.value)}
-            disabled={submitting}
-          >
-            {months.map((item) => (
-              <option key={monthKey(item)} value={monthKey(item)}>
-                {monthLabel(item)}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          <span>Type</span>
-          <select
-            value={type}
-            onChange={(event) => setType(event.target.value as "Credit" | "Debit")}
-            disabled={submitting}
-          >
-            <option value="Credit">Credit</option>
-            <option value="Debit">Debit</option>
-          </select>
-        </label>
-
-        {type === "Credit" ? (
-          <label className="form-span-2">
-            <span>Donor name</span>
-            <input
-              list="donor-options"
-              value={name}
-              onChange={(event) => selectDonor(event.target.value)}
-              placeholder="Search donor"
-              disabled={submitting}
-            />
-            <datalist id="donor-options">
-              {donors.map((donor) => (
-                <option key={donor.id} value={donor.name} />
+    <>
+      <form className="form-stack form-stack--polished" onSubmit={submit}>
+        <div className="form-grid">
+          <label>
+            <span>Month</span>
+            <select value={month} onChange={(event) => setMonth(event.target.value)}>
+              {months.map((item) => (
+                <option key={monthKey(item)} value={monthKey(item)}>
+                  {monthLabel(item)}
+                </option>
               ))}
-            </datalist>
+            </select>
           </label>
-        ) : (
-          <label className="form-span-2">
-            <span>Description</span>
+
+          <label>
+            <span>Type</span>
+            <select
+              value={type}
+              onChange={(event) => setType(event.target.value as "Credit" | "Debit")}
+            >
+              <option value="Credit">Credit</option>
+              <option value="Debit">Debit</option>
+            </select>
+          </label>
+
+          {type === "Credit" ? (
+            <label className="form-span-2">
+              <span>Donor name</span>
+              <input
+                list="donor-options"
+                value={name}
+                onChange={(event) => selectDonor(event.target.value)}
+                placeholder="Search donor"
+              />
+              <datalist id="donor-options">
+                {donors.map((donor) => (
+                  <option key={donor.id} value={donor.name} />
+                ))}
+              </datalist>
+            </label>
+          ) : (
+            <label className="form-span-2">
+              <span>Description</span>
+              <input
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Expense description"
+              />
+            </label>
+          )}
+
+          <label>
+            <span>Amount</span>
             <input
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="Expense description"
-              disabled={submitting}
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              placeholder="0"
             />
           </label>
-        )}
+        </div>
 
-        <label>
-          <span>Amount</span>
-          <input
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-            placeholder="0"
-            disabled={submitting}
-          />
-        </label>
-      </div>
+        {message && <p className="form-message">{message}</p>}
 
-      {message && <p className="form-message">{message}</p>}
+        <div className="form-actions">
+          <button className="primary-button" type="submit">
+            Submit
+          </button>
+        </div>
+      </form>
 
-      <div className="form-actions">
-        <button className="primary-button" type="submit" disabled={submitting}>
-          {submitting ? (
-            <span className="button-spinner" aria-label="Submitting" />
-          ) : null}
-          {submitting ? "Submitting..." : "Submit"}
-        </button>
-      </div>
-    </form>
+      {successOpen ? (
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal-card" style={{ width: "min(520px, 100%)" }}>
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => setSuccessOpen(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2 className="modal-title">Transaction saved</h2>
+            <p className="modal-note">Your transaction has been recorded successfully.</p>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

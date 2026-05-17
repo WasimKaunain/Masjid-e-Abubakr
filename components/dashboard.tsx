@@ -413,31 +413,6 @@ export default function Dashboard({
               </table>
             </div>
 
-            <div className="transactions-cards" aria-label="Transactions (mobile)">
-              {transactions.length === 0 ? (
-                <div className="empty-state">{t.noTransactions}</div>
-              ) : (
-                transactions.map((transaction) => (
-                  <article key={transaction.id} className="transaction-row--compact">
-                    <span className="name">{transaction.Name ?? "—"}</span>
-                    <span className="amount">{formatCurrency(transaction.Amount)}</span>
-                    <span className="type">
-                      <span
-                        className={`pill ${
-                          transaction.Type === "Credit" ? "credit" : "debit"
-                        }`}
-                      >
-                        {transaction.Type ?? "—"}
-                      </span>
-                    </span>
-                    {transaction.Type === "Debit" ? (
-                      <span className="desc">{transaction.Description ?? "—"}</span>
-                    ) : null}
-                  </article>
-                ))
-              )}
-            </div>
-
             <div className="summary-stack">
               <article className="summary-card capsule-card">
                 <span>{t.totalCredit}</span>
@@ -528,8 +503,8 @@ function DonationProgressHero({
   return (
     <section className={`hero-progress ${achieved ? "achieved" : ""}`}>
       <div className="hero-progress__top">
-        <strong className="hero-progress__title">{title}</strong>
-        <span className="hero-progress__amount">
+        <strong>{title}</strong>
+        <span>
           {formatCurrency(progress.current)} / {formatCurrency(progress.target)}
         </span>
       </div>
