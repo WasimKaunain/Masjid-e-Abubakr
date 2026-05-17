@@ -267,23 +267,33 @@ input {
 }
 
 .image-strip--scroll {
-  scrollbar-gutter: stable both-edges;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(320px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  align-items: stretch;
 }
 
 .image-frame {
   position: relative;
-  min-height: 240px;
   overflow: hidden;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.06);
 }
 
-.image-frame:first-child {
-  min-height: 290px;
+.image-strip--scroll .image-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 0;
 }
 
 .mosque-image {
-  object-fit: cover;
+  position: absolute;
+}
+
+@media (max-width: 900px) {
+  .image-strip--scroll {
+    grid-auto-columns: minmax(84%, 90%);
+  }
 }
 
 .panel {
@@ -1164,4 +1174,94 @@ tbody tr:last-child td {
 
 .transaction-desc-row {
   padding: 10px 16px 16px;
+}
+
+/* Treasurer button typography */
+.hero-header .banner-button {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* --- Image overlap fix ---
+   Ensure frames always have their own box when using fill images.
+*/
+.image-strip {
+  position: relative;
+  isolation: isolate;
+}
+
+.image-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-strip--scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(320px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  align-items: stretch;
+}
+
+.image-strip--scroll .image-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  min-height: 0;
+}
+
+.mosque-image {
+  position: absolute;
+}
+
+@media (max-width: 900px) {
+  .image-strip--scroll {
+    grid-auto-columns: minmax(84%, 90%);
+  }
+}
+
+/* Debit description row pill */
+.transaction-desc-row {
+  padding: 0 16px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.transaction-desc-row::first-line {
+  font-weight: 700;
+}
+
+.transaction-desc-row {
+  text-align: center;
+}
+
+.transaction-desc-row {
+  position: relative;
+}
+
+.transaction-desc-row {
+  color: #9a3412;
+}
+
+.transaction-desc-row {
+  background: rgba(249, 115, 22, 0.12);
+  border-radius: 999px;
+  margin: 8px 16px 16px;
+  padding: 10px 14px;
+  border: 1px solid rgba(249, 115, 22, 0.18);
+}
+
+.transaction-desc-pill {
+  margin: 8px 16px 16px;
+  text-align: center;
+  color: #9a3412;
+  background: rgba(249, 115, 22, 0.12);
+  border-radius: 999px;
+  padding: 10px 14px;
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  font-weight: 700;
+}
+
+/* Donation panel should be full width in donation tab */
+.donation-tab .donation-card {
+  width: 100%;
 }

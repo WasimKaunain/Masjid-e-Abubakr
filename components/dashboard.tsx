@@ -396,8 +396,10 @@ export default function Dashboard({
                         transaction.Type === "Debit" && transaction.Description
                           ? (
                               <tr key={`${transaction.id}-desc`}>
-                                <td colSpan={3} className="transaction-desc-row">
-                                  {transaction.Description}
+                                <td colSpan={3}>
+                                  <div className="transaction-desc-pill">
+                                    {transaction.Description}
+                                  </div>
                                 </td>
                               </tr>
                             )
