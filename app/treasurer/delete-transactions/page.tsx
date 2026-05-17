@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getTreasurerSession } from "@/lib/auth";
 import {
   getTransactionsForMonth,
@@ -22,6 +23,10 @@ export default async function DeleteTransactionsPage({ searchParams }: Props) {
   return (
     <main className="utility-shell">
       <section className="utility-card wide-card">
+        <Link className="back-button" href="/treasurer">
+          ← Back
+        </Link>
+
         <p className="eyebrow">Treasurer</p>
         <h1>Delete transactions</h1>
         <DeleteTransactionsForm

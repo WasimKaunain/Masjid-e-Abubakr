@@ -18,6 +18,10 @@ export default async function TreasurerDashboardPage() {
   return (
     <main className="utility-shell">
       <section className="utility-card wide-card">
+        <Link className="back-button" href="/">
+          ← Back
+        </Link>
+
         <div className="dashboard-header">
           <div>
             <p className="eyebrow">Treasurer dashboard</p>

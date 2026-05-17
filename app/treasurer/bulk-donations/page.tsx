@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getTreasurerSession } from "@/lib/auth";
 import { getTreasurerMonthOptions, getUnpaidDonors } from "@/lib/treasurer-data";
 import BulkDonationForm from "@/components/bulk-donation-form";
@@ -13,6 +14,10 @@ export default async function BulkDonationPage() {
   return (
     <main className="utility-shell">
       <section className="utility-card wide-card">
+        <Link className="back-button" href="/treasurer">
+          ← Back
+        </Link>
+
         <p className="eyebrow">Treasurer</p>
         <h1>Bulk donation entry</h1>
         <BulkDonationForm months={months} donors={donors} />

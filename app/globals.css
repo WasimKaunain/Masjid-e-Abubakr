@@ -267,12 +267,11 @@ input {
 }
 
 .image-strip--scroll {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(320px, 1fr);
-  gap: 12px;
+  display: flex;
   overflow-x: auto;
-  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem;
+  scroll-snap-type: x mandatory;
 }
 
 .image-frame {
@@ -281,18 +280,26 @@ input {
 }
 
 .image-strip--scroll .image-frame {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  min-height: 0;
+  flex: 0 0 auto;
+  width: min(90%, 600px);
+  height: 200px;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  scroll-snap-align: start;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .mosque-image {
-  position: absolute;
+  object-fit: cover;
 }
 
 @media (max-width: 900px) {
   .image-strip--scroll {
     grid-auto-columns: minmax(84%, 90%);
+  }
+
+  .image-strip--scroll .image-frame {
+    width: 90%;
   }
 }
 
@@ -964,8 +971,7 @@ tbody tr:last-child td {
 }
 
 .hero-header__right {
-  justify-items: end;
-  gap: 12px;
+  justify-items: stretch;
 }
 
 .hero-header__center {
@@ -1264,4 +1270,19 @@ tbody tr:last-child td {
 /* Donation panel should be full width in donation tab */
 .donation-tab .donation-card {
   width: 100%;
+}
+
+/* Header action buttons on dashboard */
+.hero-header__right .banner-button,
+.hero-header__mobile-controls .banner-button {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  padding: 12px 18px;
+  box-shadow:
+    0 12px 22px rgba(0, 0, 0, 0.24),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18);
 }

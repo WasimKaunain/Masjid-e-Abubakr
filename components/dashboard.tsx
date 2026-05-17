@@ -294,9 +294,10 @@ export default function Dashboard({
               src={src}
               alt={`${t.mosqueName} ${index + 1}`}
               fill
-              sizes="(max-width: 900px) 92vw, 33vw"
+              sizes="(max-width: 900px) 90vw, 600px"
               className="mosque-image"
               priority={index === 0}
+              style={{ objectFit: "contain" }}
             />
           </div>
         ))}
