@@ -42,3 +42,18 @@ model monthly_report {
   total_remaining_amount Decimal?  @db.Decimal(10, 2)
   due_count              Decimal?  @db.Decimal(10, 2)
 }
+
+model visitor {
+  id        Int      @id @default(autoincrement())
+  ip        String   @db.VarChar(64)
+  location  String?  @db.VarChar(120)
+  origin    String?  @db.VarChar(2048)
+  userAgent String?  @db.VarChar(512)
+  frequency Int      @default(1)
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @default(now())
+
+  @@unique([ip, origin])
+  @@index([lastSeen])
+  @@index([location])
+}

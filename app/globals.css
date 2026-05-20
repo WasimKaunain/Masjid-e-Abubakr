@@ -743,6 +743,12 @@ tbody tr:last-child td {
   margin-bottom: 14px;
 }
 
+.treasurer-top-actions__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .pill-link,
 .pill-button {
   display: inline-flex;
@@ -1871,4 +1877,68 @@ tbody tr:last-child td {
   .login-button {
     min-height: 50px;
   }
+}
+
+/* Visitor Badge and Treasurer Header Alignment */
+.visitor-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  flex-direction: column;
+  height: auto;
+  padding: 8px 12px;
+  gap: 2px;
+}
+
+.visitor-badge__value {
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.visitor-badge__label {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.visitor-badge--compact {
+  min-width: 30px;
+  height: 30px;
+  padding: 7px 10px;
+}
+
+.visitor-badge--compact .visitor-badge__value {
+  font-size: 14px;
+}
+
+.visitor-badge--compact .visitor-badge__label {
+  font-size: 10px;
+}
+
+/* Visitors page table polish (scoped) */
+table[aria-label="Visitors"] thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(12, 18, 28, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+table[aria-label="Visitors"] tbody tr:hover {
+  background: rgba(0, 0, 0, 0.08);
 }
