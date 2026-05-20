@@ -23,9 +23,7 @@ export default async function DeleteTransactionsPage({ searchParams }: Props) {
   return (
     <main className="utility-shell">
       <section className="utility-card wide-card">
-        <Link className="back-button" href="/treasurer">
-          ← Back
-        </Link>
+        <Link className="pill-link" href="/treasurer"> ← Back </Link>
 
         <p className="eyebrow">Treasurer</p>
         <h1>Delete transactions</h1>

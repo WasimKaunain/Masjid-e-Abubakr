@@ -23,6 +23,7 @@ export default function TransactionForm({
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [successOpen, setSuccessOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   function selectDonor(value: string) {
     setName(value);
@@ -32,29 +33,40 @@ export default function TransactionForm({
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    const response = await fetch("/api/treasurer/transactions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        month,
-        type,
-        name: type === "Credit" ? name : undefined,
-        amount: Number(amount),
-        description: type === "Debit" ? description : undefined,
-      }),
-    });
-    const data = await response.json();
+    if (submitting) return;
 
-    if (response.ok) {
-      setMessage("");
-      setSuccessOpen(true);
-      setName("");
-      setAmount("");
-      setDescription("");
-      return;
+    setSubmitting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/treasurer/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          month,
+          type,
+          name: type === "Credit" ? name : undefined,
+          amount: Number(amount),
+          description: type === "Debit" ? description : undefined,
+        }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("");
+        setSuccessOpen(true);
+        setName("");
+        setAmount("");
+        setDescription("");
+        return;
+      }
+
+      setMessage(data.message ?? "Unable to save transaction");
+    } catch {
+      setMessage("Unable to save transaction");
+    } finally {
+      setSubmitting(false);
     }
-
-    setMessage(data.message ?? "Unable to save transaction");
   }
 
   return (
@@ -124,8 +136,8 @@ export default function TransactionForm({
         {message && <p className="form-message">{message}</p>}
 
         <div className="form-actions">
-          <button className="primary-button" type="submit">
-            Submit
+          <button className="primary-button" type="submit" disabled={submitting}>
+            {submitting ? "Submitting…" : "Submit"}
           </button>
         </div>
       </form>

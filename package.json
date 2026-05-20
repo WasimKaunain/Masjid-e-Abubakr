@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "dotenv": "^17.4.2",
+    "framer-motion": "^12.39.0",
     "next": "latest",
     "pg": "^8.20.0",
     "prisma": "^6.19.3",

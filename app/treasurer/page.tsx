@@ -1,7 +1,10 @@
+
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTreasurerSession } from "@/lib/auth";
 import LogoutButton from "@/components/logout-button";
+
 
 const cards = [
 	{
@@ -44,17 +47,23 @@ export default async function TreasurerDashboardPage() {
 		<main className="utility-shell">
 			<section className="utility-card wide-card">
 				<div className="treasurer-top-actions">
-					<Link className="pill-link" href="/">
-						← Back
-					</Link>
+					<Link className="pill-link" href="/"> ← Back </Link>
 					<LogoutButton />
 				</div>
 
+			
 				<div className="dashboard-header treasurer-header">
-					<div>
-						<h1>Welcome, {session.name}</h1>
-						<p className="subtle">Choose a service to continue.</p>
-					</div>
+				  <div className="treasurer-header-content">
+				    <span className="welcome-text">Welcome</span>
+					
+				    <h1 className="treasurer-name">
+				      {session.name}
+				    </h1>
+					
+				    <p className="subtle treasurer-subtitle">
+				      Choose a service to continue.
+				    </p>
+				  </div>
 				</div>
 
 				<div className="feature-stack">
