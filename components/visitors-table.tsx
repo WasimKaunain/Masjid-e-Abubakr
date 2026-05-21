@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { RefreshCw, CalendarDays, CalendarRange } from "lucide-react";
 
 type Row = {
   id: number;
@@ -67,43 +68,81 @@ export default function VisitorsTable({ initialFilters }: { initialFilters: Filt
 
   return (
     <div className="form-stack">
-      <div className="form-grid">
-        <label className="form-span-2">
-          <span>Place</span>
-          <select value={location} onChange={(e) => setLocation(e.target.value)}>
-            <option value="">All places</option>
-            {places.map((place) => (
-              <option key={place} value={place}>
-                {place}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>From</span>
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        </label>
-        <label>
-          <span>To</span>
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-        </label>
-      </div>
 
       <div
-        className="utility-row"
-        style={{ justifyContent: "space-between", gap: 12, alignItems: "center" }}
+        className="utility-row visitors-top-card"
+        style={{ justifyContent: "space-between", alignItems: "center" }}
       >
-        <p className="subtle" style={{ margin: 0 }}>
-          Total unique visitors: <strong>{count}</strong>
-        </p>
-        <button className="primary-button" type="button" onClick={load} disabled={loading}>
-          {loading ? "Loading…" : "Refresh"}
+        <div>
+          <p className="subtle" style={{ margin: 0 }}>
+            Total unique visitors
+          </p>
+
+          <h2 style={{ margin: "4px 0 0 0" }}>{count}</h2>
+        </div>
+
+        <button
+          className="icon-button"
+          type="button"
+          onClick={load}
+          disabled={loading}
+          aria-label="Refresh"
+        >
+          <RefreshCw size={18} className={loading ? "spin-icon" : ""} />
         </button>
+      </div>
+
+      <div className="visitors-filter-card">
+        <div className="form-grid">
+
+          <label className="form-span-2">
+            <span>Place</span>
+
+            <select value={location} onChange={(e) => setLocation(e.target.value)}>
+              <option value="">All places</option>
+
+              {places.map((place) => (
+                <option key={place} value={place}>
+                  {place}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="date-icon-field">
+            <span>From</span>
+
+            <div className="date-icon-wrapper">
+              <CalendarDays size={18} />
+
+              <input
+                type="date"
+                value={from}
+                onChange={(e) => setFrom(e.target.value)}
+              />
+            </div>
+          </label>
+
+          <label className="date-icon-field">
+            <span>To</span>
+
+            <div className="date-icon-wrapper">
+              <CalendarRange size={18} />
+
+              <input
+                type="date"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+              />
+            </div>
+          </label>
+
+        </div>
       </div>
 
       {message && <p className="form-message">{message}</p>}
 
-      <div className="table-shell">
+      <div className="table-shell visitors-table-card">
         <table className="select-table" aria-label="Visitors">
           <thead>
             <tr>
@@ -112,6 +151,7 @@ export default function VisitorsTable({ initialFilters }: { initialFilters: Filt
               <th>Date</th>
             </tr>
           </thead>
+
           <tbody>
             {rows.length ? (
               rows.map((row) => (
@@ -131,6 +171,7 @@ export default function VisitorsTable({ initialFilters }: { initialFilters: Filt
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }

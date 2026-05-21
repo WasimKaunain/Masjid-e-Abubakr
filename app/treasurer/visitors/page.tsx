@@ -17,10 +17,7 @@ export default async function VisitorsPage({ searchParams }: Props) {
     <main className="utility-shell">
       <section className="utility-card wide-card">
         <div className="treasurer-top-actions">
-          <Link className="pill-link" href="/treasurer">
-            ← Back
-          </Link>
-          <VisitorBadge compact />
+          <Link className="pill-link" href="/treasurer"> ← Back </Link>
         </div>
 
         <p className="eyebrow">Treasurer</p>
