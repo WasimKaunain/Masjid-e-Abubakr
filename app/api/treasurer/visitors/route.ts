@@ -13,6 +13,13 @@ function authorized(request: Request) {
   return Boolean(readTreasurerSession(token));
 }
 
+type PlaceRow = { location: string | null };
+
+type GroupedRow = {
+  _sum: { frequency: number | null };
+  _max: { lastSeen: Date | null; location: string | null };
+};
+
 export async function GET(request: Request) {
   if (!authorized(request)) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -38,8 +45,8 @@ export async function GET(request: Request) {
       : {}),
   };
 
-  const [uniqueCount, placeRows, grouped] = await Promise.all([
-    prisma.visitor.findMany({ select: { ip: true }, distinct: ["ip"] }).then((rows) => rows.length),
+  const [uniqueIpRows, placeRows, grouped] = await Promise.all([
+    prisma.visitor.findMany({ select: { ip: true }, distinct: ["ip"] }),
     prisma.visitor.findMany({
       select: { location: true },
       distinct: ["location"],
@@ -55,15 +62,17 @@ export async function GET(request: Request) {
     }),
   ]);
 
-  const places = placeRows
+  const uniqueCount = uniqueIpRows.length;
+
+  const places = (placeRows as PlaceRow[])
     .map((row) => row.location)
     .filter((value): value is string => Boolean(value));
 
-  const rows = grouped.map((item, index) => ({
+  const rows = (grouped as GroupedRow[]).map((item, index) => ({
     id: index,
     location: item._max.location ?? null,
     frequency: item._sum.frequency ?? 0,
-    lastSeen: item._max.lastSeen?.toISOString() ?? new Date(0).toISOString(),
+    lastSeen: item._max.lastSeen ? item._max.lastSeen.toISOString() : new Date(0).toISOString(),
   }));
 
   return NextResponse.json({ count: uniqueCount, rows, places });
