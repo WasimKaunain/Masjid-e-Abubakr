@@ -2020,13 +2020,14 @@ tbody tr:last-child td {
 
 .visitor-badge {
   position: relative;
+  align-items: center;
   overflow: hidden;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  gap: 1rem;
-  min-width: 220px;
-  padding: 1.2rem 1.25rem;
-  border-radius: 26px;
+  gap: 0.55rem;
+  min-width: unset;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
   text-decoration: none;
   color: inherit;
 
@@ -2043,7 +2044,7 @@ tbody tr:last-child td {
   border: 1px solid rgba(255,255,255,0.08);
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.18),
+    0 6px 18px rgba(0,0,0,0.18),
     inset 0 1px 0 rgba(255,255,255,0.08);
 
   transition:
@@ -2053,17 +2054,16 @@ tbody tr:last-child td {
 }
 
 .visitor-badge:hover {
-  transform: translateY(-4px);
+  transform: translateY(-1px);
   border-color: rgba(255,255,255,0.14);
 
-  box-shadow:
-    0 16px 40px rgba(0,0,0,0.24),
-    inset 0 1px 0 rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .visitor-badge__glow {
   position: absolute;
-  inset: auto -20% -55% auto;
+  top: -30px;
+  right: -30px;
   width: 180px;
   height: 180px;
   border-radius: 999px;
@@ -2078,31 +2078,23 @@ tbody tr:last-child td {
 }
 
 .visitor-badge__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: contents;
 }
 
 .visitor-badge__icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 999px;
 
   display: grid;
   place-items: center;
 
   background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.08);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
 .visitor-badge__arrow {
-  opacity: 0.7;
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+  display: none;
 }
 
 .visitor-badge:hover .visitor-badge__arrow {
@@ -2112,34 +2104,32 @@ tbody tr:last-child td {
 
 .visitor-badge__content {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .visitor-badge__value {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 0.92rem;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.04em;
 }
 
 .visitor-badge__label {
-  font-size: 0.92rem;
+  font-size: 0.8rem;
   opacity: 0.72;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .visitor-badge--compact {
-  min-width: 170px;
-  padding: 1rem;
-  border-radius: 22px;
+  padding: 0.42rem 0.7rem;
 }
 
 .visitor-badge--compact .visitor-badge__value {
-  font-size: 1.8rem;
+  font-size: 0.84rem;
 }
 
 .visitor-badge--compact .visitor-badge__icon {
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
 }
