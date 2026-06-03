@@ -133,7 +133,7 @@ const mosqueImages = [
   "/images/mosque/mosque-hero-5.jpeg",
   "/images/mosque/mosque-hero-6.jpeg",
   "/images/mosque/mosque-hero-7.jpeg",
-  "/images/mosque/mosque-hero-8.jpg",
+  "/images/mosque/mosque-hero-8.jpeg",
 ];
 
 function formatCurrency(value: number) 
