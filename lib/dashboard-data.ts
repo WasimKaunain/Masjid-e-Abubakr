@@ -114,15 +114,53 @@ export async function getMonthTransactions(selectedMonth: Date) {
     Number(previousAgg.find((row) => row.Type === "Credit")?._sum.Amount ?? 0) -
     Number(previousAgg.find((row) => row.Type === "Debit")?._sum.Amount ?? 0);
 
-  const totalCredit = reportRow ? Number(reportRow.total_credit) : fallbackTotalCredit;
-  const totalDebit = reportRow
-    ? Number(reportRow.total_debit ?? 0)
+  // If `monthly_report` exists but is stale, the dashboard can show wrong totals
+  // (common for the latest month if reports aren't recalculated after edits).
+  // Detect obvious mismatch and correct it by updating the report row.
+  const reportCredit = reportRow ? Number(reportRow.total_credit ?? 0) : null;
+  const reportDebit = reportRow ? Number(reportRow.total_debit ?? 0) : null;
+
+  const isReportStale =
+    reportRow &&
+    (Math.abs((reportCredit ?? 0) - fallbackTotalCredit) > 0.0001 ||
+      Math.abs((reportDebit ?? 0) - fallbackTotalDebit) > 0.0001);
+
+  const effectiveReportRow =
+    !reportRow || isReportStale
+      ? await prisma.monthly_report.upsert({
+          where: { month_name: reportRowKey(selectedKey) },
+          create: {
+            month_name: reportRowKey(selectedKey),
+            total_credit: fallbackTotalCredit,
+            total_debit: fallbackTotalDebit,
+            remaining_amount: fallbackTotalCredit - fallbackTotalDebit,
+            previous_amount: fallbackPreviousBalance,
+            total_remaining_amount:
+              fallbackPreviousBalance + (fallbackTotalCredit - fallbackTotalDebit),
+            due_count: reportRow?.due_count ?? 0,
+          },
+          update: {
+            total_credit: fallbackTotalCredit,
+            total_debit: fallbackTotalDebit,
+            remaining_amount: fallbackTotalCredit - fallbackTotalDebit,
+            previous_amount: fallbackPreviousBalance,
+            total_remaining_amount:
+              fallbackPreviousBalance + (fallbackTotalCredit - fallbackTotalDebit),
+          },
+        })
+      : reportRow;
+
+  const totalCredit = effectiveReportRow
+    ? Number(effectiveReportRow.total_credit)
+    : fallbackTotalCredit;
+  const totalDebit = effectiveReportRow
+    ? Number(effectiveReportRow.total_debit ?? 0)
     : fallbackTotalDebit;
-  const remaining = reportRow
-    ? Number(reportRow.remaining_amount)
+  const remaining = effectiveReportRow
+    ? Number(effectiveReportRow.remaining_amount)
     : totalCredit - totalDebit;
-  const closingBalance = reportRow
-    ? Number(reportRow.total_remaining_amount ?? remaining)
+  const closingBalance = effectiveReportRow
+    ? Number(effectiveReportRow.total_remaining_amount ?? remaining)
     : fallbackPreviousBalance + remaining;
 
   return {
@@ -134,7 +172,9 @@ export async function getMonthTransactions(selectedMonth: Date) {
     summary: {
       totalCredit,
       totalDebit,
-      previousBalance: reportRow ? Number(reportRow.previous_amount ?? 0) : fallbackPreviousBalance,
+      previousBalance: effectiveReportRow
+        ? Number(effectiveReportRow.previous_amount ?? 0)
+        : fallbackPreviousBalance,
       remaining,
       closingBalance,
     },
