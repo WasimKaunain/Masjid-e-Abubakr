@@ -272,53 +272,43 @@ a.tab-button {
   margin-top: 24px;
 }
 
-/* Gallery: show full images without fixed frames/overlays */
+/* --- Mosque gallery carousel (single source of truth) --- */
 .image-strip--scroll {
   display: flex;
   overflow-x: auto;
-  gap: 8px; /* single-line gap */
-  padding: 8px 0;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-}
-
-.image-strip--scroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.image-strip--scroll::-webkit-scrollbar-thumb {
-  background: rgba(23, 48, 43, 0.22);
-  border-radius: 999px;
+  scroll-snap-type: x mandatory;
+  gap: 12px;
+  padding: 10px 0;
 }
 
 .image-strip--scroll .image-frame {
-  width: min(92vw, 700px);
+  flex: 0 0 auto;
+  width: min(92vw, 720px); /* ~1 image per screen on mobile, reasonable max on desktop */
+  scroll-snap-align: start;
   border-radius: 14px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(23, 48, 43, 0.12);
   box-shadow: 0 14px 40px rgba(23, 48, 43, 0.12);
+  position: relative;
+  aspect-ratio: 16 / 9;
 }
 
-/* Next/Image with `fill` needs a positioned box; we keep it but make it size to content */
-.image-frame {
-  position: relative;
-  overflow: visible;
-  aspect-ratio: 16 / 9;
+@media (max-width: 900px) {
+  .image-strip--scroll {
+    gap: 10px;
+    padding: 8px 0;
+  }
+
+  .image-strip--scroll .image-frame {
+    width: 92vw; /* exactly one image per swipe */
+    aspect-ratio: 4 / 3;
+  }
 }
 
 .mosque-image {
   object-fit: contain;
-}
-
-@media (max-width: 900px) {
-  .image-strip--scroll .image-frame {
-    width: 92vw;
-  }
-
-  .image-frame {
-    aspect-ratio: 4 / 3;
-  }
 }
 
 .panel {
