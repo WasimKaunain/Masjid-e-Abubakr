@@ -3,6 +3,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import prisma from "@/lib/prisma";
 import { authCookies, readTreasurerSession } from "@/lib/auth";
 import { transactionTimestampForMonth } from "@/lib/treasurer-data";
+import { recalculateReportsFrom } from "@/lib/monthly-report";
 
 function sessionFrom(request: Request) {
   const token = request.headers
@@ -46,10 +47,13 @@ export async function POST(request: Request) {
     const transactionType = body.type!;
 
     await prisma.$transaction(async (tx) => {
+      const donor =
+        transactionType === "Credit" && body.name
+          ? await tx.donor_list.findUnique({ where: { name: body.name } })
+          : null;
+
       if (transactionType === "Credit" && body.name) {
-        const donor = await tx.donor_list.findUnique({ where: { name: body.name } });
-        if (!donor) throw new Error("Donor not found");
-        if (donor.paid_or_not) throw new Error("This donor has already paid");
+        if (donor?.paid_or_not) throw new Error("This donor has already paid");
       }
 
       await tx.transactions.create({
@@ -62,13 +66,15 @@ export async function POST(request: Request) {
         },
       });
 
-      if (transactionType === "Credit" && body.name) {
+      if (transactionType === "Credit" && donor) {
         await tx.donor_list.update({
-          where: { name: body.name },
+          where: { name: donor.name },
           data: { paid_or_not: true },
         });
       }
     });
+
+    await recalculateReportsFrom(month);
 
     return NextResponse.json({ success: true });
   } catch (error) {

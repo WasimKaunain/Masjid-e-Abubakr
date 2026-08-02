@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { authCookies, readTreasurerSession } from "@/lib/auth";
 import {
   recalculateReportsFrom,
-  reportMonthKeyFromDate,
+  monthKeyFromDate,
 } from "@/lib/monthly-report";
 
 export async function POST(request: Request) {
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     rows
       .map((row) => row.Timestamp)
       .filter((value): value is Date => Boolean(value))
-      .map((value) => reportMonthKeyFromDate(value)),
+      .map((value) => monthKeyFromDate(value)),
   );
 
   const earliestAffectedMonth = Array.from(affectedMonths).sort()[0];

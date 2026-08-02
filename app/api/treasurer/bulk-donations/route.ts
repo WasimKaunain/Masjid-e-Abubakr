@@ -3,6 +3,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import prisma from "@/lib/prisma";
 import { authCookies, readTreasurerSession } from "@/lib/auth";
 import { transactionTimestampForMonth } from "@/lib/treasurer-data";
+import { recalculateReportsFrom } from "@/lib/monthly-report";
 
 export async function POST(request: Request) {
   const token = request.headers
@@ -55,6 +56,8 @@ export async function POST(request: Request) {
       data: { paid_or_not: true },
     }),
   ]);
+
+  await recalculateReportsFrom(body.month);
 
   return NextResponse.json({ success: true });
 }

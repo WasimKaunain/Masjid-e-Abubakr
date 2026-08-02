@@ -117,13 +117,23 @@ export async function getMonthTransactions(selectedMonth: Date) {
   // If `monthly_report` exists but is stale, the dashboard can show wrong totals
   // (common for the latest month if reports aren't recalculated after edits).
   // Detect obvious mismatch and correct it by updating the report row.
+  const fallbackRemaining = fallbackTotalCredit - fallbackTotalDebit;
+  const fallbackClosingBalance = fallbackPreviousBalance + fallbackRemaining;
   const reportCredit = reportRow ? Number(reportRow.total_credit ?? 0) : null;
   const reportDebit = reportRow ? Number(reportRow.total_debit ?? 0) : null;
+  const reportPreviousBalance = reportRow ? Number(reportRow.previous_amount ?? 0) : null;
+  const reportRemaining = reportRow ? Number(reportRow.remaining_amount ?? 0) : null;
+  const reportClosingBalance = reportRow
+    ? Number(reportRow.total_remaining_amount ?? reportRemaining ?? 0)
+    : null;
 
   const isReportStale =
     reportRow &&
     (Math.abs((reportCredit ?? 0) - fallbackTotalCredit) > 0.0001 ||
-      Math.abs((reportDebit ?? 0) - fallbackTotalDebit) > 0.0001);
+      Math.abs((reportDebit ?? 0) - fallbackTotalDebit) > 0.0001 ||
+      Math.abs((reportPreviousBalance ?? 0) - fallbackPreviousBalance) > 0.0001 ||
+      Math.abs((reportRemaining ?? 0) - fallbackRemaining) > 0.0001 ||
+      Math.abs((reportClosingBalance ?? 0) - fallbackClosingBalance) > 0.0001);
 
   const effectiveReportRow =
     !reportRow || isReportStale

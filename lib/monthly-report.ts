@@ -1,6 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import prisma from "@/lib/prisma";
-import { addMonths, monthKey, parseMonthKey } from "@/lib/months";
+import { addMonths, monthKey, parseMonthKey, startOfMonth } from "@/lib/months";
 
 type SumRow = {
   credit: string | number | null;
@@ -14,6 +14,12 @@ function toNumber(value: string | number | null | undefined) {
 function reportRowKey(monthKeyValue: string) {
   const value = monthKeyValue.replace(/-/g, "_");
   return `transactions_${value}`;
+}
+
+function monthKeyFromReportRowKey(value: string) {
+  const match = /^transactions_(\d{4})_(\d{2})$/.exec(value);
+  if (!match) return null;
+  return `${match[1]}-${match[2]}`;
 }
 
 export async function recalculateMonthlyReport(
@@ -95,28 +101,50 @@ export async function recalculateMonthlyReport(
   });
 }
 
-export function reportMonthKeyFromDate(value: Date) {
-  return reportRowKey(
-    monthKey(new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), 1))),
-  );
+export function monthKeyFromDate(value: Date) {
+  return monthKey(startOfMonth(value));
 }
 
 export async function recalculateReportsFrom(selectedMonthKey: string) {
-  const reports = await prisma.monthly_report.findMany({
-    where: {
-      month_name: {
-        gte: selectedMonthKey,
-      },
-    },
-    orderBy: {
-      month_name: "asc",
-    },
-    select: {
-      month_name: true,
-    },
-  });
+  const selectedMonth = parseMonthKey(selectedMonthKey);
+  if (!selectedMonth) {
+    throw new Error("Invalid report month");
+  }
 
-  await Promise.all(
-    reports.map((report) => recalculateMonthlyReport(report.month_name)),
-  );
+  const startReportKey = reportRowKey(selectedMonthKey);
+  const [transactionMonths, reports] = await Promise.all([
+    prisma.$queryRaw<{ month_start: Date }[]>`
+      SELECT DATE_TRUNC('month', "Timestamp") AS month_start
+      FROM transactions
+      WHERE "Timestamp" IS NOT NULL
+        AND "Timestamp" >= ${selectedMonth}
+      GROUP BY DATE_TRUNC('month', "Timestamp")
+      ORDER BY month_start ASC
+    `,
+    prisma.monthly_report.findMany({
+      where: {
+        month_name: {
+          gte: startReportKey,
+        },
+      },
+      orderBy: {
+        month_name: "asc",
+      },
+      select: {
+        month_name: true,
+      },
+    }),
+  ]);
+
+  const monthKeys = new Set<string>([
+    ...transactionMonths.map((row) => monthKey(startOfMonth(row.month_start))),
+    ...reports
+      .map((report) => monthKeyFromReportRowKey(report.month_name))
+      .filter((value): value is string => Boolean(value)),
+  ]);
+
+  const orderedMonthKeys = Array.from(monthKeys).sort();
+  for (const key of orderedMonthKeys) {
+    await recalculateMonthlyReport(key);
+  }
 }
